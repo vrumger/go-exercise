@@ -34,9 +34,9 @@ var githubCmd = &cobra.Command{
 				Filter: "2fa_disabled",
 			})
 
-			tfaDisabledMemberIDs := make(map[*int64]struct{}, len(tfaDisabledMembers))
+			tfaDisabledMemberIDs := make(map[int64]struct{}, len(tfaDisabledMembers))
 			for _, tfaDisabledMember := range tfaDisabledMembers {
-				tfaDisabledMemberIDs[tfaDisabledMember.ID] = struct{}{}
+				tfaDisabledMemberIDs[*tfaDisabledMember.ID] = struct{}{}
 			}
 
 			adminMembers, _, err := client.Organizations.ListMembers(context.Background(), *org.Login, &github.ListMembersOptions{
@@ -68,7 +68,7 @@ var githubCmd = &cobra.Command{
 			for _, member := range append(adminMembers, members...) {
 				fmt.Printf("  %s - %s\n", *member.Login, membersTypes[member.Login])
 
-				if _, ok := tfaDisabledMemberIDs[member.ID]; ok {
+				if _, ok := tfaDisabledMemberIDs[*member.ID]; ok {
 					fmt.Println("    - 2FA Disabled")
 				}
 			}
